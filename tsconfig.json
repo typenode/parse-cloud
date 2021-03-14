@@ -1,0 +1,35 @@
+{
+  "compilerOptions": {
+    "outDir": "lib",
+    "module": "commonjs",
+    "target": "es6",
+    "lib": ["es6", "dom","es2015", "es2017","ESNext" ],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "moduleResolution": "node",
+    "strictNullChecks": false,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "isolatedModules": true,
+    "noImplicitAny": false,
+    "importHelpers": true
+  },
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules",
+    "build",
+    "scripts",
+    "acceptance-tests",
+    "webpack",
+    "jest",
+    "public",
+    "out",
+    "src/setupTests.ts"
+  ]
+}

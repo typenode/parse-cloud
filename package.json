@@ -1,0 +1,23 @@
+{
+  "name": "@typenode/parse-cloud",
+  "version": "1.0.0",
+  "description": "Parse Cloud Helpers",
+  "author": "mench.harutyunyan@gmail.com",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "dependencies": {
+    "@types/parse": "^2.18.3"
+  },
+  "peerDependencies": {
+    "@typenode/parse-server": "^5.0.0"
+  },
+  "devDependencies": {
+    "@typenode/parse-server": "^5.0.0",
+    "typescript": "^4.2.3",
+    "ts-lib": "^0.0.5"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w"
+  }
+}
