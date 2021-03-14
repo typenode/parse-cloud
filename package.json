@@ -1,6 +1,6 @@
 {
   "name": "@typenode/parse-cloud",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Parse Cloud Helpers",
   "author": "mench.harutyunyan@gmail.com",
   "main": "index.js",

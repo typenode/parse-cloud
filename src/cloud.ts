@@ -38,7 +38,11 @@ export class Cloud {
           const _info = request[ "_info" ];
           const parentName = _info.parentType.name;
           if (parentName === typename) {
-            return fields[ resolverName ](_source, request.params, request.user, _info);
+            const context = {
+              ...request,
+              info: _info
+            };
+            return fields[ resolverName ](_source, context);
           }
           throw new Parse.Error(-1, `Invalid resolver ${typename}:${resolverName}`);
         });
@@ -328,9 +332,13 @@ export interface Setup {
   onStart(cloud: Cloud): void
 }
 
+export interface ResolverContext<U> extends Parse.Cloud.FunctionRequest {
+  info: any
+  user?: Parse.User<U>
+}
 export type Resolvers<T, U = Parse.Attributes> = {
   [ className: string ]: {
-    [ resolverName: string ]: (object: T, args: any, user: Parse.User<U>, info: any) => Promise<any> | any
+    [ resolverName: string ]: (object: T, context: ResolverContext<U>) => Promise<any> | any
   }
 };
 
