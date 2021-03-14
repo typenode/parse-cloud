@@ -1,8 +1,8 @@
 export function trigger(triggers: Triggers) {
   return cloud.registerTriggers(triggers);
 }
-export function resolve<T = any>(resolver: Resolvers<T>) {
-  return cloud.registerResolvers(resolver);
+export function resolve<T = any, U = Parse.Attributes>(resolver: Resolvers<T>) {
+  return cloud.registerResolvers<T, U>(resolver);
 }
 export function schema<T>(schema: ISchema): Model<T> {
   return cloud.registerSchema(schema);
@@ -29,7 +29,7 @@ export class Cloud {
       });
     });
   }
-  public registerResolvers<T>(resolvers: Resolvers<T>) {
+  public registerResolvers<T, U>(resolvers: Resolvers<T>) {
     Object.keys(resolvers).forEach(typename => {
       const fields = resolvers[ typename ];
       Object.keys(fields).forEach(resolverName => {
@@ -38,7 +38,7 @@ export class Cloud {
           const _info = request[ "_info" ];
           const parentName = _info.parentType.name;
           if (parentName === typename) {
-            return fields[ resolverName ](_source, request.params, _info);
+            return fields[ resolverName ](_source, request.params, request.user, _info);
           }
           throw new Parse.Error(-1, `Invalid resolver ${typename}:${resolverName}`);
         });
@@ -95,6 +95,7 @@ export class Cloud {
         this.logger.debug(`CREATED: ${className} class.`);
       }));
       await Promise.all(remove.map(async className => {
+        await new CloudSchema(className).purge();
         await new CloudSchema(className).delete();
         this.logger.debug(`DELETED: ${className} class.`);
       }));
@@ -283,6 +284,7 @@ export interface IArrayField extends IBaseField {
   type: "Array";
   defaultValue?: any[];
   targetClass?: string;
+  schema?: INestedSchema
 }
 
 export type IField =
@@ -326,9 +328,9 @@ export interface Setup {
   onStart(cloud: Cloud): void
 }
 
-export type Resolvers<T> = {
+export type Resolvers<T, U = Parse.Attributes> = {
   [ className: string ]: {
-    [ resolverName: string ]: (object: T, args: any, info: any) => Promise<any> | any
+    [ resolverName: string ]: (object: T, args: any, user: Parse.User<U>, info: any) => Promise<any> | any
   }
 };
 
