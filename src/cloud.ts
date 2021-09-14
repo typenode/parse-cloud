@@ -120,9 +120,12 @@ export class Cloud {
     }
   }
   private async syncFields(className: string, localFields: ISchema["fields"] = {}, remoteFields: ISchema["fields"] = {}) {
+    const RESERVED_FIELDS = [
+      "objectId", "createdAt", "updatedAt", "ACL", "username", "email", "password", "emailVerified", "authData"
+    ];
     const local = Object.keys(localFields);
     const remote = Object.keys(remoteFields);
-    const { add, remove, update } = this.getActions(local, remote.filter(n => !["objectId", "createdAt", "updatedAt", "ACL"].includes(n)));
+    const { add, remove, update } = this.getActions(local, remote.filter(n => !RESERVED_FIELDS.includes(n)));
     let schema = new CloudSchema(className);
     add.map(fieldName => {
       const { type, ...options } = localFields[ fieldName ];
@@ -161,10 +164,12 @@ export class Cloud {
       schema.addIndex(indexName, index);
       this.logger.debug(`CREATE: ${indexName} index.`);
     });
-    remove.map(indexName => {
-      schema.deleteIndex(indexName);
-      this.logger.debug(`DELETE: ${indexName} index.`);
-    });
+    if( !className.includes("_") ){
+      remove.map(indexName => {
+        schema.deleteIndex(indexName);
+        this.logger.debug(`DELETE: ${indexName} index.`);
+      });
+    }
     await schema.update();
     await Promise.all(update.map(async indexName => {
       const remoteIndex = remoteIndexes[ indexName ];
