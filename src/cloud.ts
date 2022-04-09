@@ -124,13 +124,20 @@ export class Cloud {
       "objectId", "createdAt", "updatedAt", "ACL"
     ];
     const USER_RESERVED_FIELDS = ["username", "email", "password", "emailVerified", "authData"];
+    const ROLE_RESERVED_FIELDS = ["name", "users", "roles"];
     const local = Object.keys(localFields);
     const remote = Object.keys(remoteFields);
     const { add, remove, update } = this.getActions(local, remote.filter(n => {
       if (RESERVED_FIELDS.includes(n)) {
         return false;
       }
-      return !(className === "_User" && USER_RESERVED_FIELDS.includes(n));
+      switch (className) {
+        case "_User":
+          return !USER_RESERVED_FIELDS.includes(n);
+        case "_Role":
+          return !ROLE_RESERVED_FIELDS.includes(n);
+      }
+      return true
     }));
     let schema = new CloudSchema(className);
     add.map(fieldName => {
